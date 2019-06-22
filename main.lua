@@ -24,7 +24,7 @@ function love.load()
    block = Block:new(2, 2, 2)
 
    -- Game initial states
-   gameState = "intro"
+   gameState = "playing"
 
 end
 
@@ -37,12 +37,12 @@ function love.update(dt)
    end
 
    if love.keyboard.isDown("left") then
-      block:move_to(block.x - 1, block.y)
+      block:move_left()
    end
 
    
    if love.keyboard.isDown("right") then
-      block:move_to(block.x + 1, block.y)
+      block:move_right()
    end
    
 end
