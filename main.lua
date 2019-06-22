@@ -1,4 +1,5 @@
 require "block"
+require "game_area"
 
 
 function love.load()
@@ -20,7 +21,7 @@ function love.load()
    block_size = windowHeight / grid_height
 
    
-
+   area = GameArea:new()
    block = Block:new(2, 2, 2)
 
    -- Game initial states
@@ -48,5 +49,6 @@ function love.update(dt)
 end
 
 function love.draw(dt)
+   area:draw(dt)
    block:draw(dt)
 end
