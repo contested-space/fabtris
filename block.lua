@@ -1,13 +1,15 @@
 Block = {}
 Block.__index = Block
 
-function Block:new(x, y, speed)
+function Block:new(x, y, block_type)
    local obj = {}
    setmetatable(obj, Block)
 
    obj.x = x
    obj.y = y
 
+   obj.block_type = block_type
+   
    obj.target_x = x
 
    obj.moving_horizontaly = false
@@ -16,8 +18,7 @@ function Block:new(x, y, speed)
 
    obj.width = block_size
    obj.offset = 0
-   obj.speed = speed
-
+   obj.speed = game_speed
    return obj
    
 end
@@ -49,15 +50,17 @@ function Block:update(dt)
 	 self:move_to(self.target_x, self.y)
       end
    end
-   self.y = self.y + dt * self.speed
+   self.y = self.y + dt * game_speed
    
    
 end
 
 function Block:draw(dt)
-   love.graphics.rectangle("fill", self.x * block_size + self.offset,
-			           self.y * block_size + self.offset,
-				   self.width, self.width)
+   if self.block_type ~= "null_block" then
+      love.graphics.rectangle("fill", self.x * block_size + self.offset,
+	             		      self.y * block_size + self.offset,
+         			      self.width, self.width)
+   end
 
    
 end

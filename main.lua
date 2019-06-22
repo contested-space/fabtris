@@ -1,5 +1,6 @@
 require "block"
 require "game_area"
+require "piece"
 
 
 function love.load()
@@ -22,9 +23,14 @@ function love.load()
 
    
    area = GameArea:new()
-   block = Block:new(2, 2, 2)
+   block = Block:new(2, 2)
+
+   piece = Piece:new("I")
 
    -- Game initial states
+
+   game_speed = 2
+   
    gameState = "playing"
 
 end
@@ -32,18 +38,19 @@ end
 function love.update(dt)
 
    block:update(dt)
+   piece:update(dt)
    
    if love.keyboard.isDown("escape") then
       love.event.quit()
    end
 
    if love.keyboard.isDown("left") then
-      block:move_left()
+      piece:move_left()
    end
 
    
    if love.keyboard.isDown("right") then
-      block:move_right()
+      piece:move_right()
    end
    
 end
@@ -51,4 +58,5 @@ end
 function love.draw(dt)
    area:draw(dt)
    block:draw(dt)
+   piece:draw(dt)
 end
