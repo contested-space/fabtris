@@ -9,8 +9,12 @@ function Piece:new(piece_type)
 
    obj.piece_type = piece_type
 
+   obj.is_rotating = false
+   obj.rotation_duration = 0.1
+
    obj.x = 5
    obj.y = 2
+   obj.matrix_size = 0
    obj:make_piece()
 
 
@@ -25,23 +29,34 @@ function Piece:make_piece()
 
    if self.piece_type == "I" then
       mat = make_matrix(4, self.x, self.y)
+      self.matrix_size = 4
 
       for i = 1, 4, 1 do
 	 mat[i][2] = Block:new(self.x - 2 + i, self.y + 2, "I_block")
       end
       self.matrix = mat
 
-   elseif piece_type == "J" then
+   elseif self.piece_type == "J" then
+      mat = make_matrix(3, self.x, self.y)
+      self.matrix_size = 3
 
-   elseif piece_type == "L" then
+      mat[1][1] = Block:new(self.x - 1, self.y - 1, "J_block")
+      mat[1][2] = Block:new(self.x - 1, self.y, "J_block")
+      mat[2][2] = Block:new(self.x , self.y, "J_block")
+      mat[3][2] = Block:new(self.x + 1, self.y, "J_block")
 
-   elseif piece_type == "O" then
+      self.matrix = mat
+      
 
-   elseif piece_type == "S" then
+   elseif self.piece_type == "L" then
 
-   elseif piece_type == "T" then
+   elseif self.piece_type == "O" then
 
-   elseif piece_type == "Z" then
+   elseif self.piece_type == "S" then
+
+   elseif self.piece_type == "T" then
+
+   elseif self.piece_type == "Z" then
    else
       error("invalid piece symbol")
    end
@@ -52,6 +67,8 @@ function make_matrix(n, x, y)
    if n < 1 then
       error("invalid matrix size: " + n)
    else
+
+      
       for i = 1, n, 1 do
 	 mat[i] = {}
 	 for j = 1, n, 1 do
@@ -63,6 +80,7 @@ function make_matrix(n, x, y)
 end
 
 function Piece:update(dt)
+   self:check_contact()
    for i = 1, table.getn(self.matrix[1]), 1 do
       for j = 1, table.getn(self.matrix[1]), 1 do
 	 mat[i][j]:update(dt)
@@ -94,7 +112,7 @@ end
 
 
 function Piece:move_right()
-   if mat[4][1].target_x ~= grid_width - 1 then
+   if mat[self.matrix_size][1].target_x ~= grid_width - 1 then
       for i = 1, table.getn(self.matrix[1]), 1 do
 	 for j = 1, table.getn(self.matrix[1]), 1 do
 	    self.matrix[i][j]:move_right()
@@ -103,3 +121,42 @@ function Piece:move_right()
    end
    
 end
+
+function Piece:check_contact()
+
+   --Stop if it reaches bottom line
+   if self.matrix[1][self.matrix_size].y >= grid_height - 1 then
+      for i = 1, self.matrix_size, 1 do
+	 for j = 1, self.matrix_size, 1 do
+	    self.matrix[i][j]:stop()
+	 end
+      end
+   end
+end
+
+function Piece:rotate_clockwise()
+   if self.is_rotating == false then
+      self.last_rotate = love.timer.getTime()
+      self.is_rotating = true
+      mat = {}
+      for i = 1, self.matrix_size, 1 do
+	 
+	 mat[i] = {}
+	 
+      end
+
+      for i = 1, self.matrix_size do
+	 for j = 1, self.matrix_size do	    
+	    mat[j][self.matrix_size - i + 1] = self.matrix[i][j]
+	    self.matrix[i][j]:translate(j - i, self.matrix_size - i + 1 - j)
+	 end
+      end
+
+      self.matrix = mat
+      
+   elseif love.timer.getTime() - self.last_rotate > self.rotation_duration then
+      self.is_rotating = false
+   end
+   
+end
+

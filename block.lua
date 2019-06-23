@@ -11,6 +11,7 @@ function Block:new(x, y, block_type)
    obj.block_type = block_type
    
    obj.target_x = x
+   obj.target_y = y + 1
 
    obj.moving_horizontaly = false
    obj.moving_left = false
@@ -19,40 +20,46 @@ function Block:new(x, y, block_type)
    obj.width = block_size
    obj.offset = 0
    obj.speed = game_speed
+
+   self.stopped = false
    return obj
    
 end
 
 
 function Block:update(dt)
-
-   if self.moving_horizontaly then
-      if self.target_x > self.x then
-	 if self.moving_left then
-	    self.moving_left = false
+   if self.stopped ~= true then
+      if self.moving_horizontaly then
+	 if self.target_x > self.x then
+	    if self.moving_left then
+	       self.moving_left = false
+	       self.moving_horizontaly = false
+	       self:move_to(self.target_x, self.y)
+	    else
+	       self.moving_right = true
+	       self.x = self.x + 10 * dt
+	    end
+	 elseif self.target_x < self.x then
+	    if self.moving_right then
+	       self.moving_right = false
+	       self.moving_horizontaly = false
+	       self:move_to(self.target_x, self.y)
+	    else
+	       self.moving_left = true
+	       self.x = self.x - 10 * dt
+	    end
+	 else
 	    self.moving_horizontaly = false
 	    self:move_to(self.target_x, self.y)
-	 else
-	    self.moving_right = true
-	    self.x = self.x + 10 * dt
 	 end
-      elseif self.target_x < self.x then
-	 if self.moving_right then
-	    self.moving_right = false
-	    self.moving_horizontaly = false
-	    self:move_to(self.target_x, self.y)
-	 else
-	    self.moving_left = true
-	    self.x = self.x - 10 * dt
-	 end
-      else
-	 self.moving_horizontaly = false
-	 self:move_to(self.target_x, self.y)
       end
+      self.y = self.y + dt * game_speed
+
+      if self.y >= self.target_y then
+	 self.target_y = self.target_y + 1
+      end
+      
    end
-   self.y = self.y + dt * game_speed
-   
-   
 end
 
 function Block:draw(dt)
@@ -97,4 +104,19 @@ end
 function Block:move_to(x, y)
    self.x = x
    self.y = y
+end
+
+function Block:stop()
+
+   self.stopped = true
+
+   self:move_to(self.x, self.target_y -1)
+
+end
+
+function Block:translate(x, y)   
+   self.x = self.x + x
+   self.y = self.y + y
+   self.target_x = self.target_x + x
+   self.target_y = self.target_y + y
 end

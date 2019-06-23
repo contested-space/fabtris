@@ -23,9 +23,9 @@ function love.load()
 
    
    area = GameArea:new()
-   block = Block:new(2, 2)
+--   block = Block:new(2, 2)
 
-   piece = Piece:new("I")
+   piece = Piece:new("J")
 
    -- Game initial states
 
@@ -37,7 +37,7 @@ end
 
 function love.update(dt)
 
-   block:update(dt)
+--   block:update(dt)
    piece:update(dt)
    
    if love.keyboard.isDown("escape") then
@@ -52,11 +52,16 @@ function love.update(dt)
    if love.keyboard.isDown("right") then
       piece:move_right()
    end
+
+   
+   if love.keyboard.isDown("up") then
+      piece:rotate_clockwise()
+   end
    
 end
 
 function love.draw(dt)
    area:draw(dt)
-   block:draw(dt)
+--   block:draw(dt)
    piece:draw(dt)
 end
