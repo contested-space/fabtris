@@ -110,7 +110,7 @@ function Block:stop()
 
    self.stopped = true
 
-   self:move_to(self.x, self.target_y -1)
+   self:move_to(self.target_x, self.target_y -1)
 
 end
 

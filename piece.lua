@@ -13,7 +13,7 @@ function Piece:new(piece_type)
    obj.rotation_duration = 0.1
 
    obj.x = 5
-   obj.y = 2
+   obj.y = 0 
    obj.matrix_size = 0
    obj:make_piece()
 
@@ -80,13 +80,14 @@ function make_matrix(n, x, y)
 end
 
 function Piece:update(dt)
-   self:check_contact()
-   for i = 1, table.getn(self.matrix[1]), 1 do
-      for j = 1, table.getn(self.matrix[1]), 1 do
-	 mat[i][j]:update(dt)
+   if self:check_contact() ~= true then
+      for i = 1, self.matrix_size, 1 do
+	 for j = 1, self.matrix_size, 1 do
+	    mat[i][j]:update(dt)
+	 end
+	 
+	 
       end
-      
-      
    end
 end
 
@@ -100,38 +101,109 @@ end
 
 
 function Piece:move_left()
-   if mat[1][1].target_x ~= 0 then
+   left_blocks = self:get_leftmost_blocks()
+   if check_left(left_blocks) == false then
+      
+      
       for i = 1, table.getn(self.matrix[1]), 1 do
 	 for j = 1, table.getn(self.matrix[1]), 1 do
 	    self.matrix[i][j]:move_left()
 	 end
-	 
       end
    end
 end
 
-
 function Piece:move_right()
-   if mat[self.matrix_size][1].target_x ~= grid_width - 1 then
+   right_blocks = self:get_rightmost_blocks()
+   if check_right(right_blocks) == false then
       for i = 1, table.getn(self.matrix[1]), 1 do
 	 for j = 1, table.getn(self.matrix[1]), 1 do
 	    self.matrix[i][j]:move_right()
 	 end
-      end		       
+      end
    end
-   
 end
+
+
+-- checks what's left of the leftmost blocks, returns false if there is nothing
+function check_left(left_blocks)
+   for k, v in pairs(left_blocks) do
+      if v.target_x <= 0 then
+	 return true
+      end
+   end
+   return false
+end
+
+function check_right(right_blocks)
+   for k, v in pairs(right_blocks) do
+      if v.target_x >= grid_width - 1 then
+	 return true
+      end
+   end
+   return false
+end
+
+
+function Piece:get_leftmost_blocks()
+   block_arr = {}
+   for j = 1, self.matrix_size do
+      found = false
+      for i = 1, self.matrix_size do
+	 if found == false then
+	    if self.matrix[i][j].block_type ~= "null_block" then
+	       table.insert(block_arr, self.matrix[i][j])
+	       found = true
+	    end
+	 end
+      end
+   end
+--   print(table.getn(block_arr))
+   return block_arr
+end
+
+function Piece:get_rightmost_blocks()
+   block_arr = {}
+   for j = 1, self.matrix_size do
+      found = false
+      for i = self.matrix_size, 1, -1 do
+	 if found == false then
+	    if self.matrix[i][j].block_type ~= "null_block" then
+	       table.insert(block_arr, self.matrix[i][j])
+	       found = true
+	    end
+	 end
+      end
+   end
+--   print(table.getn(block_arr))
+   return block_arr
+end
+
+
+
 
 function Piece:check_contact()
 
    --Stop if it reaches bottom line
-   if self.matrix[1][self.matrix_size].y >= grid_height - 1 then
-      for i = 1, self.matrix_size, 1 do
-	 for j = 1, self.matrix_size, 1 do
-	    self.matrix[i][j]:stop()
+
+   for i = 1, self.matrix_size, 1 do
+      for j = 1, self.matrix_size, 1 do	 
+	 if self.matrix[i][j].block_type ~= "null_block" and self.matrix[i][j].y >= grid_height - 1 then
+	    self:stop()
+	    return true
 	 end
       end
    end
+   return false
+end
+
+function Piece:stop()
+   for i = 1, self.matrix_size, 1 do
+      for j = 1, self.matrix_size, 1 do
+	 self.matrix[i][j]:stop()
+      end
+   end
+   game:respawn()
 end
 
 function Piece:rotate_clockwise()

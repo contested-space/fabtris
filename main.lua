@@ -1,6 +1,7 @@
 require "block"
 require "game_area"
 require "piece"
+require "game"
 
 
 function love.load()
@@ -14,7 +15,7 @@ function love.load()
    -- Game grid settings
 
 
-   grid_height = 24    -- Standard height is 20, add 4 for hidden starting blocks
+   grid_height =24    -- Standard height is 20, add 4 for hidden starting blocks
    grid_width = 10
 
 
@@ -25,11 +26,13 @@ function love.load()
    area = GameArea:new()
 --   block = Block:new(2, 2)
 
-   piece = Piece:new("J")
+--   piece = Piece:new("J")
 
    -- Game initial states
 
    game_speed = 2
+
+   game = Game:new()
    
    gameState = "playing"
 
@@ -38,24 +41,24 @@ end
 function love.update(dt)
 
 --   block:update(dt)
-   piece:update(dt)
+   game:update(dt)
    
    if love.keyboard.isDown("escape") then
       love.event.quit()
    end
 
    if love.keyboard.isDown("left") then
-      piece:move_left()
+      game.active_piece:move_left()
    end
 
    
    if love.keyboard.isDown("right") then
-      piece:move_right()
+      game.active_piece:move_right()
    end
 
    
    if love.keyboard.isDown("up") then
-      piece:rotate_clockwise()
+      game.active_piece:rotate_clockwise()
    end
    
 end
@@ -63,5 +66,5 @@ end
 function love.draw(dt)
    area:draw(dt)
 --   block:draw(dt)
-   piece:draw(dt)
+   game:draw(dt)
 end
