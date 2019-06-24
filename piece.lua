@@ -49,17 +49,65 @@ function Piece:make_piece()
       
 
    elseif self.piece_type == "L" then
+      mat = make_matrix(3, self.x, self.y)
+      self.matrix_size = 3
 
+      mat[3][1] = Block:new(self.x - 1, self.y - 1, "L_block")
+      mat[1][2] = Block:new(self.x - 1, self.y, "L_block")
+      mat[2][2] = Block:new(self.x , self.y, "L_block")
+      mat[3][2] = Block:new(self.x + 1, self.y, "L_block")
+
+      self.matrix = mat
    elseif self.piece_type == "O" then
+      mat = make_matrix(2, self.x, self.y)
+      self.matrix_size = 2
+
+      mat[1][1] = Block:new(self.x - 1, self.y - 1, "O_block")
+      mat[1][2] = Block:new(self.x - 1, self.y, "O_block")
+      mat[2][1] = Block:new(self.x, self.y - 1, "O_block")
+      mat[2][2] = Block:new(self.x, self.y, "O_block")
+
+      self.matrix = mat
 
    elseif self.piece_type == "S" then
+      mat = make_matrix(3, self.x, self.y)
+      self.matrix_size = 3
+
+      mat[2][1] = Block:new(self.x, self.y - 1, "S_block")
+      mat[3][1] = Block:new(self.x + 1, self.y - 1, "S_block")
+      mat[1][2] = Block:new(self.x - 1 , self.y, "S_block")
+      mat[2][2] = Block:new(self.x, self.y, "S_block")
+
+      self.matrix = mat
 
    elseif self.piece_type == "T" then
+      mat = make_matrix(3, self.x, self.y)
+      self.matrix_size = 3
 
+      mat[2][1] = Block:new(self.x, self.y - 1, "T_block")
+      mat[1][2] = Block:new(self.x - 1, self.y, "T_block")
+      mat[2][2] = Block:new(self.x , self.y, "T_block")
+      mat[3][2] = Block:new(self.x + 1, self.y, "T_block")
+
+      self.matrix = mat
+
+      
+      
    elseif self.piece_type == "Z" then
+      mat = make_matrix(3, self.x, self.y)
+      self.matrix_size = 3
+
+      mat[1][1] = Block:new(self.x - 1, self.y - 1, "Z_block")
+      mat[2][1] = Block:new(self.x , self.y - 1, "Z_block")
+      mat[2][2] = Block:new(self.x , self.y, "Z_block")
+      mat[3][2] = Block:new(self.x + 1, self.y, "Z_block")
+
+      self.matrix = mat
+
    else
       error("invalid piece symbol")
    end
+   print(self.piece_type)
 end
 
 function make_matrix(n, x, y)

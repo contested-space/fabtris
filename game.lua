@@ -84,10 +84,41 @@ end
 
 function random_piece()
    roll = math.random()
-   if roll < 0.5 then
+   if roll < 0.14 then
       return "J"
-   else
+   elseif roll < 0.28 then
+      return "L"
+   elseif roll < 0.42 then
       return "I"
+   elseif roll < 0.56 then
+      return "O"
+   elseif roll < 0.70 then
+      return "S"
+   elseif roll < 84 then
+      return "Z"
+   else
+      return "T"
    end
+  
 end
 
+
+-- function random_piece()
+--    roll = math.random()
+--    if roll < 0.0 then
+--       return "J"
+--    elseif roll < 0.0 then
+--       return "L"
+--    elseif roll < 0.0 then
+--       return "I"
+--    elseif roll < 0.0 then
+--       return "O"
+--    elseif roll < 0.0 then
+--       return "S"
+--    elseif roll < 0.0 then
+--       return "Z"
+--    else
+--       return "T"
+--    end
+  
+-- end
