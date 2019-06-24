@@ -80,10 +80,11 @@ function make_matrix(n, x, y)
 end
 
 function Piece:update(dt)
+   
    if self:check_contact() ~= true then
       for i = 1, self.matrix_size, 1 do
 	 for j = 1, self.matrix_size, 1 do
-	    mat[i][j]:update(dt)
+	    self.matrix[i][j]:update(dt)
 	 end
 	 
 	 
@@ -103,8 +104,6 @@ end
 function Piece:move_left()
    left_blocks = self:get_leftmost_blocks()
    if check_left(left_blocks) == false then
-      
-      
       for i = 1, table.getn(self.matrix[1]), 1 do
 	 for j = 1, table.getn(self.matrix[1]), 1 do
 	    self.matrix[i][j]:move_left()
@@ -115,6 +114,7 @@ end
 
 function Piece:move_right()
    right_blocks = self:get_rightmost_blocks()
+   
    if check_right(right_blocks) == false then
       for i = 1, table.getn(self.matrix[1]), 1 do
 	 for j = 1, table.getn(self.matrix[1]), 1 do
@@ -130,6 +130,8 @@ function check_left(left_blocks)
    for k, v in pairs(left_blocks) do
       if v.target_x <= 0 then
 	 return true
+      elseif game:check(math.floor(v.x - 1), math.floor(v.y)) then
+	 return true
       end
    end
    return false
@@ -138,6 +140,8 @@ end
 function check_right(right_blocks)
    for k, v in pairs(right_blocks) do
       if v.target_x >= grid_width - 1 then
+	 return true
+      elseif game:check(math.floor(v.x + 1), math.floor(v.y)) then
 	 return true
       end
    end
@@ -179,23 +183,82 @@ function Piece:get_rightmost_blocks()
    return block_arr
 end
 
+function Piece:get_lower_blocks()
+   block_arr = {}
+   for i = 1, self.matrix_size do
+      found = false
+      for j = self.matrix_size, 1, -1 do
+	 if found == false then
+	    if self.matrix[i][j].block_type ~= "null_block" then
+	       table.insert(block_arr, self.matrix[i][j])
+	       found = true
+	    end
+	 end	 
+      end
+   end
+   return block_arr
+end
 
+
+
+-- function Piece:check_contact()
+
+--    --Stop if it reaches bottom line or other blocks
+
+--    for i = 1, self.matrix_size, 1 do
+--       for j = 1, self.matrix_size, 1 do
+
+-- 	 x = self.matrix[i][j].x
+-- 	 y = self.matrix[i][j].y
+
+-- 	 if x < 0 then
+
+
+-- 	 elseif  x >= grid_width  then
+	 
+-- 	 elseif y <= 0 then
+
+-- 	 else
+	 
+-- 	    if self.matrix[i][j].block_type ~= "null_block" and self.matrix[i][j].y >= grid_height - 1 then
+-- 	       self:stop()
+-- 	       return true
+-- 	    elseif y > 1 and y < grid_height - 1  and x >= 1 and x < grid_width - 1 then
+
+
+-- 	       if game:check(math.floor(x + 0.5), math.floor(y + 0.5) + 1) then
+-- 		  self:stop()
+-- 	       end
+-- 	    end
+-- 	 end
+--       end
+--    end
+--       return false
+-- end
 
 
 function Piece:check_contact()
+   lower_blocks = self:get_lower_blocks()
+   
+   contact = false
+   
+   for k, v in pairs(lower_blocks) do
 
-   --Stop if it reaches bottom line
+      if v.target_y == grid_height then
+	 contact = true
 
-   for i = 1, self.matrix_size, 1 do
-      for j = 1, self.matrix_size, 1 do	 
-	 if self.matrix[i][j].block_type ~= "null_block" and self.matrix[i][j].y >= grid_height - 1 then
-	    self:stop()
-	    return true
-	 end
+      elseif game:check(math.floor(v.x + 0.5 + 1), v.target_y + 1) then
+	 contact = true
       end
    end
-   return false
+
+   if contact == true then
+      self:stop()
+   end
+   return contact
+   
 end
+
 
 function Piece:stop()
    for i = 1, self.matrix_size, 1 do
@@ -224,6 +287,20 @@ function Piece:rotate_clockwise()
 	 end
       end
 
+
+      repeat
+
+	 c_left = check_left(self:get_leftmost_blocks())
+	 if c_left ~= false then
+	    self:translate(1, 0)
+	    
+	 end
+	 c_right= check_right(self:get_rightmost_blocks())
+	 if c_right ~= false then
+	    self:translate(-1, 0)
+	 end
+      until c_left == false and c_right == false
+      
       self.matrix = mat
       
    elseif love.timer.getTime() - self.last_rotate > self.rotation_duration then
@@ -232,3 +309,17 @@ function Piece:rotate_clockwise()
    
 end
 
+function Piece:translate(dx, dy)
+
+   for i = 1, self.matrix_size do
+      for j = 1, self.matrix_size do
+	 self.matrix[i][j].x = self.matrix[i][j].x + dx
+	 self.matrix[i][j].target_x = self.matrix[i][j].target_x + dx
+	 
+	 self.matrix[i][j].y = self.matrix[i][j].y + dy
+	 self.matrix[i][j].target_y = self.matrix[i][j].target_y + dy
+	 
+      end
+   end
+   
+end
