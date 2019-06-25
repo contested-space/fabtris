@@ -24,9 +24,6 @@ function Game:respawn()
 
 	    coord_x = math.floor(piece.matrix[i][j].x + 0.5 + 1)
 	    coord_y = math.floor(piece.matrix[i][j].y + 0.5 + 1)
-	    print("coord:")
-	    print(coord_x)
-	    print(coord_y)
 
 	    if coord_x >= 1 and coord_y <= grid_height and coord_x <= grid_width then
 	       self.board[coord_x][coord_y] = piece.matrix[i][j]
@@ -42,6 +39,15 @@ function Game:update(dt)
    if self.active_piece ~= nil then
       self.active_piece:update(dt)
    end
+
+   for j = 1, grid_height do
+      if self:check_line(j) then
+	 print("clear!")
+	 print(j)
+	 self:clear_line(j)
+      end
+   end
+   
 end
 
 function Game:draw(dt)
@@ -100,6 +106,42 @@ function random_piece()
       return "T"
    end
   
+end
+
+function Game:clear_line(y)
+
+   -- for i = 1, grid_width do
+   --    self.board[i][y] = Block:new(i, y, "null_block")
+   -- end
+   for j = y, 2 , -1 do
+      print("bla")
+      for i = 1, grid_width do
+	 print(i)
+	 print(j)
+	 self.board[i][j-1]:translate(0, 1)
+	 self.board[i][j] = self.board[i][j - 1]
+      end
+   end
+
+   for i = 1, grid_width do
+      self.board[i][1] = Block:new(i, 1, "null_block")
+      
+   end
+end
+
+function Game:check_line(y)
+   total_block = 0
+   for i = 1, grid_width do
+      if self.board[i][y].block_type ~= "null_block" then
+	 total_block = total_block + 1
+      end
+   end
+   
+   if total_block == grid_width then
+      return true
+   end
+   return false
+   
 end
 
 
