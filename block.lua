@@ -65,21 +65,21 @@ end
 function Block:draw(dt)
    if self.block_type ~= "null_block" then
       if self.block_type == "I_block" then
-	 love.graphics.setColor(0, 1, 1)
+	 love.graphics.setColor(1, 0, 0)
       
       elseif self.block_type == "J_block" then
-	 love.graphics.setColor(0, 0, 1)
+	 love.graphics.setColor(1, 0.7, 0)
 
       elseif self.block_type == "L_block" then
-	 love.graphics.setColor(1, 0.5, 0)
+	 love.graphics.setColor(1, 1, 0)
       elseif self.block_type == "S_block" then
-	 love.graphics.setColor(1, 1, 0)
+	 love.graphics.setColor(0, 0.5, 0)
       elseif self.block_type == "Z_block" then
-	 love.graphics.setColor(0.5, 0, 0.5)
+	 love.graphics.setColor(0, 0, 1)
       elseif self.block_type == "T_block" then
-	 love.graphics.setColor(1, 1, 0)
+	 love.graphics.setColor(0.3, 0, 0.51)
       elseif self.block_type == "O_block" then
-	 love.graphics.setColor(1, 0, 0)
+	 love.graphics.setColor(0.9, 0.51, 0.9)
       end
 	 
 

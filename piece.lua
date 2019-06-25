@@ -107,7 +107,6 @@ function Piece:make_piece()
    else
       error("invalid piece symbol")
    end
-   print(self.piece_type)
 end
 
 function make_matrix(n, x, y)
@@ -295,7 +294,7 @@ function Piece:check_contact()
       if v.target_y == grid_height then
 	 contact = true
 
-      elseif game:check(math.floor(v.x + 0.5 + 1), v.target_y + 1) then
+      elseif game:check(math.floor(v.x + 1), v.target_y + 1) then
 	 contact = true
       end
    end

@@ -100,7 +100,7 @@ function random_piece()
       return "O"
    elseif roll < 0.70 then
       return "S"
-   elseif roll < 84 then
+   elseif roll < 0.84 then
       return "Z"
    else
       return "T"
@@ -114,10 +114,9 @@ function Game:clear_line(y)
    --    self.board[i][y] = Block:new(i, y, "null_block")
    -- end
    for j = y, 2 , -1 do
-      print("bla")
+
       for i = 1, grid_width do
-	 print(i)
-	 print(j)
+
 	 self.board[i][j-1]:translate(0, 1)
 	 self.board[i][j] = self.board[i][j - 1]
       end
