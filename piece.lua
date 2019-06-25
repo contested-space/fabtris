@@ -52,7 +52,7 @@ function Piece:make_piece()
       mat = make_matrix(3, self.x, self.y)
       self.matrix_size = 3
 
-      mat[3][1] = Block:new(self.x - 1, self.y - 1, "L_block")
+      mat[3][1] = Block:new(self.x + 1, self.y - 1, "L_block")
       mat[1][2] = Block:new(self.x - 1, self.y, "L_block")
       mat[2][2] = Block:new(self.x , self.y, "L_block")
       mat[3][2] = Block:new(self.x + 1, self.y, "L_block")
