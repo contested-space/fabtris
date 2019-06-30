@@ -13,10 +13,16 @@ function Piece:new(piece_type)
    obj.rotation_duration = 0.1
 
    obj.x = 5
-   obj.y = 0 
+   obj.y = 0
+   obj.target_x = 5
+   obj.target_y = 0
+   
    obj.matrix_size = 0
    obj:make_piece()
 
+   obj.moving_left = false
+   obj.moving_right = false
+   
 
    
 
@@ -127,8 +133,8 @@ function make_matrix(n, x, y)
 end
 
 function Piece:update(dt)
-   
    if self:check_contact() ~= true then
+      self:fall()
       for i = 1, self.matrix_size, 1 do
 	 for j = 1, self.matrix_size, 1 do
 	    self.matrix[i][j]:update(dt)
@@ -136,6 +142,8 @@ function Piece:update(dt)
 	 
 	 
       end
+   else
+      self:stop()
    end
 end
 
@@ -149,26 +157,39 @@ end
 
 
 function Piece:move_left()
-   left_blocks = self:get_leftmost_blocks()
-   if check_left(left_blocks) == false then
-      for i = 1, table.getn(self.matrix[1]), 1 do
-	 for j = 1, table.getn(self.matrix[1]), 1 do
-	    self.matrix[i][j]:move_left()
+      left_blocks = self:get_leftmost_blocks()
+      if check_left(left_blocks) == false then
+	 self.target_x = self.target_x - 1
+	 for i = 1, table.getn(self.matrix[1]), 1 do
+	    for j = 1, table.getn(self.matrix[1]), 1 do
+	       self.matrix[i][j]:move_left()
+	    end
 	 end
       end
-   end
 end
 
 function Piece:move_right()
-   right_blocks = self:get_rightmost_blocks()
-   
-   if check_right(right_blocks) == false then
-      for i = 1, table.getn(self.matrix[1]), 1 do
-	 for j = 1, table.getn(self.matrix[1]), 1 do
-	    self.matrix[i][j]:move_right()
+      right_blocks = self:get_rightmost_blocks()
+      
+      if check_right(right_blocks) == false then
+	 self.target_x = self.target_x - 1
+	 for i = 1, table.getn(self.matrix[1]), 1 do
+	    for j = 1, table.getn(self.matrix[1]), 1 do
+	       self.matrix[i][j]:move_right()
+	    end
 	 end
       end
+
+end
+
+function Piece:fall()
+
+   for i = 1, table.getn(self.matrix[1]), 1 do
+      for j = 1, table.getn(self.matrix[1]), 1 do
+	 self.matrix[i][j]:fall()
+      end
    end
+   
 end
 
 
@@ -177,7 +198,7 @@ function check_left(left_blocks)
    for k, v in pairs(left_blocks) do
       if v.target_x <= 0 then
 	 return true
-      elseif game:check(math.floor(v.x - 1), math.floor(v.y)) then
+      elseif game:check(math.floor(v.target_x - 1), math.floor(v.target_y)) then
 	 return true
       end
    end
@@ -188,7 +209,7 @@ function check_right(right_blocks)
    for k, v in pairs(right_blocks) do
       if v.target_x >= grid_width - 1 then
 	 return true
-      elseif game:check(math.floor(v.x + 1), math.floor(v.y)) then
+      elseif game:check(math.floor(v.target_x + 1), math.floor(v.target_y)) then
 	 return true
       end
    end
@@ -290,18 +311,16 @@ function Piece:check_contact()
    contact = false
    
    for k, v in pairs(lower_blocks) do
-
-      if v.target_y == grid_height then
+      if v.y >= grid_height then
+	 print("v.y >= grid_height")
 	 contact = true
 
-      elseif game:check(math.floor(v.x + 1), v.target_y + 1) then
+      elseif game:check(v.target_x, v.target_y + 1) then
+	 print("check is true")
 	 contact = true
       end
    end
-
-   if contact == true then
-      self:stop()
-   end
+   print(contact)
    return contact
    
 end
