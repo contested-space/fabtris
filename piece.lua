@@ -22,7 +22,10 @@ function Piece:new(piece_type)
 
    obj.moving_left = false
    obj.moving_right = false
+
    
+   obj.rotating_clockwise = false
+   obj.rotating_counterclockwise = false
 
    
 
@@ -312,15 +315,15 @@ function Piece:check_contact()
    
    for k, v in pairs(lower_blocks) do
       if v.y >= grid_height then
-	 print("v.y >= grid_height")
+--	 print("v.y >= grid_height")
 	 contact = true
 
       elseif game:check(v.target_x, v.target_y + 1) then
-	 print("check is true")
+--	 print("check is true")
 	 contact = true
       end
    end
-   print(contact)
+--   print(contact)
    return contact
    
 end
@@ -335,36 +338,154 @@ function Piece:stop()
    game:respawn()
 end
 
+function translate_matrix(matrix, x, y)
+
+   for i = 1,  table.getn(matrix[1]) do
+      for j = 1,  table.getn(matrix[1]) do
+	 matrix[i][j]:translate(x, y)
+      end
+   end
+   
+   
+end
+
+function Piece:check_game()
+   result = false
+   for i = 1, self.matrix_size do
+      for j = 1, self.matrix_size do
+	 if self.matrix[i][j].block_type ~= "null_block" then
+	    if game:check(self.matrix[i][j].target_x, self.matrix[i][j].target_y) then
+	       result = true
+	    end
+	       
+	       
+	 end
+	 
+      end
+   end
+   return result
+end
+
+function matrix_rotate_clockwise(matrix)
+
+   matrix_size = table.getn(matrix[1])
+
+   mat = {}
+
+   for i = 1, matrix_size do
+      mat[i] = {}
+   end
+   
+   for i = 1, matrix_size do
+      for j = 1, matrix_size do
+	 mat[j][matrix_size - i + 1] = matrix[i][j]
+	    --	    self.matrix[i][j]:translate(j - i, self.matrix_size - i + 1 - j)
+	 mat[j][matrix_size - i + 1]:translate(j - i, matrix_size - i + 1 - j)
+	 end
+      end
+
+   return mat
+   
+end
+
+
+function matrix_rotate_counterclockwise(matrix)
+
+   mat = matrix_rotate_clockwise(matrix)
+   mat2 = matrix_rotate_clockwise(mat)
+   mat3 = matrix_rotate_clockwise(mat2)
+
+   return mat3
+end
+
+					
+
 function Piece:rotate_clockwise()
    if self.is_rotating == false then
       self.last_rotate = love.timer.getTime()
       self.is_rotating = true
-      mat = {}
-      for i = 1, self.matrix_size, 1 do
+      self.revert = false
+      mat = matrix_rotate_clockwise(self.matrix)
+
+      matrix_size = table.getn(self.matrix[1])
+
+
+      --self.rotating_clockwise = true
+      --self.rotating_counterclockwise = false
+      
+      -- for i = 1, matrix_size do
+      -- 	 for j = 1, matrix_size do
+
+      -- 	    if game:check(mat[i][j].target_x, mat[i][j].target_y) then
+      -- 	       --print(mat[i][j].target_x)
+      -- 	       --print(mat[i][j].target_y)
+
+      -- 	       left = false
+      -- 	       right = false
+      -- 	       -- for k = 1, matrix_size do
+      -- 	       -- 	  if game:check(mat[1][k].target_x, mat[1][k].target_y) then
+      -- 	       -- 	     if mat[1][k].block_type ~= "null_block" then left = true end
+      -- 	       -- 	  end
+      -- 	       -- end
+
+      -- 	       -- for k = 1, matrix_size do
+      -- 	       -- 	  if game:check(mat[matrix_size][k].target_x, mat[1][k].target_y) then
+      -- 	       -- 	     if mat[matrix_size][k].block_type ~= "null_block" then right = true end
+      -- 	       -- 	  end
+      -- 	       -- end
+	       
+      -- 	       -- -- if left then
+      -- 	       -- -- 	  translate_matrix(mat, -1, 0)
+
+
+      -- 	       -- -- elseif right then
+      -- 	       -- -- 	  translate_matrix(mat, 1, 0)
+      -- 	       -- -- else
+      -- 	       -- if left ~= true and right ~= true then
+      -- 	       self.is_rotating = false
+      -- 	       return
+      -- 	       -- end
+      -- 	    end
+	    
+      -- 	 end
+      -- end
+
+      -- if self.revert then
+      -- 	 for i = 1, self.matrix_size do
+      -- 	    for j = 1, self.matrix_size do	    
+	       
+      -- 	       mat[j][self.matrix_size - i + 1]:translate(j - i, self.matrix_size - i + 1 - j)
+      -- 	    end
+      -- 	 end
 	 
-	 mat[i] = {}
-	 
-      end
-
-      for i = 1, self.matrix_size do
-	 for j = 1, self.matrix_size do	    
-	    mat[j][self.matrix_size - i + 1] = self.matrix[i][j]
-	    self.matrix[i][j]:translate(j - i, self.matrix_size - i + 1 - j)
-	 end
-      end
+      -- end
 
 
+
+      --if rotation brings the block outside the grid, the whole piece is kicked one square back
       repeat
 
-	 c_left = check_left(self:get_leftmost_blocks())
-	 if c_left ~= false then
-	    self:translate(1, 0)
+      	 c_left = check_left(self:get_leftmost_blocks())
+      	 if c_left ~= false then
+      	    self:translate(1, 0)
+	    if self:check_game() then
+	       self:translate(-1, 0)
+	       self.matrix = matrix_rotate_counterclockwise(self.matrix)
+	       self.is_rotating = false
+	       return
+	    end
 	    
-	 end
-	 c_right= check_right(self:get_rightmost_blocks())
-	 if c_right ~= false then
-	    self:translate(-1, 0)
-	 end
+      	 end
+      	 c_right= check_right(self:get_rightmost_blocks())
+      	 if c_right ~= false then
+      	    self:translate(-1, 0)
+	    if self:check_game() then
+	       self:translate(1, 0)
+	       self.matrix = matrix_rotate_counterclockwise(self.matrix)
+	       self.is_rotating = false
+	       return
+	    end
+      	 end
       until c_left == false and c_right == false
       
       self.matrix = mat

@@ -24,16 +24,16 @@ function Game:respawn()
 
 	    --coord_x = math.floor(piece.matrix[i][j].x + 0.5 + 1)
 	    --coord_y = math.floor(piece.matrix[i][j].y + 0.5 + 1)
-	    print("coords:")
+--	    print("coords:")
 	    coord_x = piece.matrix[i][j].target_x
 	    coord_y = piece.matrix[i][j].target_y
 
-	    print(coord_x)
-	    print(coord_y)
+--	    print(coord_x)
+--	    print(coord_y)
 
 	    if coord_x >= 0 and coord_y <= grid_height and coord_x <= grid_width then
 	       self.board[coord_x + 1][coord_y] = piece.matrix[i][j]
-	       print(self.board[coord_x + 1][coord_y].block_type)
+--	       print(self.board[coord_x + 1][coord_y].block_type)
 	    end
 	 end	  
       end
@@ -48,8 +48,8 @@ function Game:update(dt)
 
    for j = 1, grid_height do
       if self:check_line(j) then
-	 print("clear!")
-	 print(j)
+
+
 	 self:clear_line(j)
       end
    end
@@ -70,7 +70,7 @@ function Game:check(x, y)
    if x < 0 then
       --print("x < 1")
       return true
-   elseif x > grid_width then
+   elseif x > grid_width - 1 then
       --print("x > grid_width")
       return true
    elseif y < 1 then
