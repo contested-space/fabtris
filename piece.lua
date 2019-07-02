@@ -366,6 +366,24 @@ function Piece:check_game()
    return result
 end
 
+
+function copy_matrix(matrix)
+   matrix_size = table.getn(matrix[1])
+   mat = {}
+   for i = 1, matrix_size do
+      mat[i] = {}
+   end
+   for i = 1, matrix_size do
+      for j = 1, matrix_size do
+	 mat[i][j] = Block:new(matrix[i][j].x, matrix[i][j].y, matrix[i][j].block_type)
+	 mat[i][j].target_x = matrix[i][j].target_x
+	 mat[i][j].target_y = matrix[i][j].target_y
+      end
+   end
+
+   return mat
+end
+
 function matrix_rotate_clockwise(matrix)
 
    matrix_size = table.getn(matrix[1])
@@ -378,9 +396,11 @@ function matrix_rotate_clockwise(matrix)
    
    for i = 1, matrix_size do
       for j = 1, matrix_size do
+
 	 mat[j][matrix_size - i + 1] = matrix[i][j]
-	    --	    self.matrix[i][j]:translate(j - i, self.matrix_size - i + 1 - j)
+	 --	    self.matrix[i][j]:translate(j - i, self.matrix_size - i + 1 - j)
 	 mat[j][matrix_size - i + 1]:translate(j - i, matrix_size - i + 1 - j)
+	 
 	 end
       end
 
@@ -405,88 +425,44 @@ function Piece:rotate_clockwise()
       self.last_rotate = love.timer.getTime()
       self.is_rotating = true
       self.revert = false
+      initial_matrix = copy_matrix(self.matrix)
       mat = matrix_rotate_clockwise(self.matrix)
 
       matrix_size = table.getn(self.matrix[1])
 
 
-      --self.rotating_clockwise = true
-      --self.rotating_counterclockwise = false
-      
-      -- for i = 1, matrix_size do
-      -- 	 for j = 1, matrix_size do
-
-      -- 	    if game:check(mat[i][j].target_x, mat[i][j].target_y) then
-      -- 	       --print(mat[i][j].target_x)
-      -- 	       --print(mat[i][j].target_y)
-
-      -- 	       left = false
-      -- 	       right = false
-      -- 	       -- for k = 1, matrix_size do
-      -- 	       -- 	  if game:check(mat[1][k].target_x, mat[1][k].target_y) then
-      -- 	       -- 	     if mat[1][k].block_type ~= "null_block" then left = true end
-      -- 	       -- 	  end
-      -- 	       -- end
-
-      -- 	       -- for k = 1, matrix_size do
-      -- 	       -- 	  if game:check(mat[matrix_size][k].target_x, mat[1][k].target_y) then
-      -- 	       -- 	     if mat[matrix_size][k].block_type ~= "null_block" then right = true end
-      -- 	       -- 	  end
-      -- 	       -- end
-	       
-      -- 	       -- -- if left then
-      -- 	       -- -- 	  translate_matrix(mat, -1, 0)
-
-
-      -- 	       -- -- elseif right then
-      -- 	       -- -- 	  translate_matrix(mat, 1, 0)
-      -- 	       -- -- else
-      -- 	       -- if left ~= true and right ~= true then
-      -- 	       self.is_rotating = false
-      -- 	       return
-      -- 	       -- end
-      -- 	    end
-	    
-      -- 	 end
-      -- end
-
-      -- if self.revert then
-      -- 	 for i = 1, self.matrix_size do
-      -- 	    for j = 1, self.matrix_size do	    
-	       
-      -- 	       mat[j][self.matrix_size - i + 1]:translate(j - i, self.matrix_size - i + 1 - j)
-      -- 	    end
-      -- 	 end
-	 
-      -- end
-
-
 
       --if rotation brings the block outside the grid, the whole piece is kicked one square back
-      repeat
+      --repeat
 
-      	 c_left = check_left(self:get_leftmost_blocks())
-      	 if c_left ~= false then
-      	    self:translate(1, 0)
-	    if self:check_game() then
-	       self:translate(-1, 0)
-	       self.matrix = matrix_rotate_counterclockwise(self.matrix)
-	       self.is_rotating = false
-	       return
-	    end
-	    
-      	 end
-      	 c_right= check_right(self:get_rightmost_blocks())
-      	 if c_right ~= false then
-      	    self:translate(-1, 0)
-	    if self:check_game() then
-	       self:translate(1, 0)
-	       self.matrix = matrix_rotate_counterclockwise(self.matrix)
-	       self.is_rotating = false
-	       return
-	    end
-      	 end
-      until c_left == false and c_right == false
+      c_left = check_left(self:get_leftmost_blocks())
+      if c_left ~= false then
+	 print("ouuuuille")
+	 self:translate(1, 0)
+	 if self:check_game() then
+	    -- self.matrix = matrix_rotate_counterclockwise(self.matrix)
+	    -- print("this")
+	    -- self:translate(-1, 0)
+	    self.matrix = initial_matrix
+	    self.is_rotating = false
+	    return
+	 end
+	 
+      end
+      c_right= check_right(self:get_rightmost_blocks())
+      if c_right ~= false then
+	 print("arrrrrrgh")
+	 self:translate(-1, 0)
+	 if self:check_game() then
+	    -- self.matrix = matrix_rotate_counterclockwise(self.matrix)
+	    -- print("that")
+	    -- self:translate(1, 0)
+	    self.matrix = initial_matrix
+	    self.is_rotating = false
+	    return
+	 end
+      end
+      --until c_left == false and c_right == false
       
       self.matrix = mat
       
