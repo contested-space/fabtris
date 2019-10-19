@@ -15,7 +15,7 @@ function love.load()
    -- Game grid settings
 
 
-   grid_height = 24    -- Standard height is 20, add 4 for hidden starting blocks
+   grid_height = 20    -- Standard height is 20, add 4 for hidden starting blocks
    grid_width = 10
 
 
