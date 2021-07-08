@@ -22,12 +22,18 @@ function Game:respawn()
 	 if piece.matrix[i][j].block_type ~= "null_block" then
 	    --  self.board[piece.matrix[i][j].target_x + 1][piece.matrix[i][j].target_y] = piece.matrix[i][j]
 
-	    coord_x = math.floor(piece.matrix[i][j].x + 0.5 + 1)
-	    coord_y = math.floor(piece.matrix[i][j].y + 0.5 + 1)
+	    --coord_x = math.floor(piece.matrix[i][j].x + 0.5 + 1)
+	    --coord_y = math.floor(piece.matrix[i][j].y + 0.5 + 1)
+--	    print("coords:")
+	    coord_x = piece.matrix[i][j].target_x
+	    coord_y = piece.matrix[i][j].target_y
 
-	    if coord_x >= 1 and coord_y <= grid_height and coord_x <= grid_width then
-	       self.board[coord_x][coord_y] = piece.matrix[i][j]
-	       print(self.board[coord_x][coord_y].block_type)
+--	    print(coord_x)
+--	    print(coord_y)
+
+	    if coord_x >= 0 and coord_y <= grid_height and coord_x <= grid_width then
+	       self.board[coord_x + 1][coord_y] = piece.matrix[i][j]
+--	       print(self.board[coord_x + 1][coord_y].block_type)
 	    end
 	 end	  
       end
@@ -42,8 +48,8 @@ function Game:update(dt)
 
    for j = 1, grid_height do
       if self:check_line(j) then
-	 print("clear!")
-	 print(j)
+
+
 	 self:clear_line(j)
       end
    end
@@ -61,15 +67,24 @@ function Game:draw(dt)
 end
 
 function Game:check(x, y)
-   if x < 1 then
-      return false
-   elseif x > grid_width then
-      return false
+   if x < 0 then
+      --print("x < 1")
+      return true
+   elseif x > grid_width - 1 then
+      --print("x > grid_width")
+      return true
    elseif y < 1 then
-      return false
+      --print("y < 1")
+      return true
    elseif y > grid_height then
-      return false
-   elseif self.board[x][y].block_type ~= "null_block" then
+      --print(x)
+      --print(y)
+      --print("y > grid_height ")
+      return true
+   elseif self.board[x+1][y].block_type ~= "null_block" then
+      --print(x)
+      --print(y)
+      --print("block not nil!")
       return true
    end
    return false
